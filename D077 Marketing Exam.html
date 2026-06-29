@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>D077 Marketing Practice Exam</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background:#0c0c12; color:#e2e8f0; font-family:system-ui,-apple-system,sans-serif; min-height:100vh; }
+.header { background:#14141e; border-bottom:1px solid #1e1e2e; padding:18px 14px 12px; position:sticky; top:0; z-index:100; }
+.header-inner { max-width:700px; margin:0 auto; }
+.header-top { display:flex; justify-content:space-between; align-items:center; }
+.title { font-size:18px; font-weight:800; color:#d4a843; }
+.subtitle { font-size:10px; color:#64748b; margin-top:2px; }
+.stats { display:flex; gap:14px; }
+.stat-label { font-size:9px; color:#64748b; text-transform:uppercase; text-align:center; letter-spacing:0.5px; }
+.stat-val { font-size:16px; font-weight:800; text-align:center; }
+.filters { display:flex; gap:4px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+.fbtn { padding:4px 10px; font-size:10px; font-weight:600; border-radius:12px; cursor:pointer; border:1px solid #2a2a3e; background:transparent; color:#94a3b8; }
+.fbtn.on { border-color:#d4a843; background:#d4a84322; color:#d4a843; }
+.fsel { padding:4px 6px; font-size:10px; border-radius:12px; border:1px solid #2a2a3e; background:#14141e; color:#94a3b8; cursor:pointer; }
+.mod-chips { display:flex; gap:4px; margin-top:6px; flex-wrap:wrap; }
+.mchip { padding:4px 9px; font-size:10px; font-weight:600; border-radius:12px; cursor:pointer; border:1px solid #2a2a3e; background:transparent; color:#94a3b8; }
+.mchip.on { border-color:#d4a843; background:#d4a84322; color:#d4a843; }
+.mchip.on[data-mod="all"] { border-color:#4ade80; background:#16532822; color:#4ade80; }
+.rbtn { padding:4px 10px; font-size:10px; font-weight:700; border-radius:12px; border:1px solid #f87171; background:transparent; color:#f87171; cursor:pointer; }
+.sbtn { padding:4px 10px; font-size:10px; font-weight:700; border-radius:12px; border:1px solid #d4a843; background:transparent; color:#d4a843; cursor:pointer; }
+.main { max-width:700px; margin:0 auto; padding:10px 10px 80px; }
+.card { background:#14141e; border-radius:10px; border:1px solid #1e1e2e; margin-bottom:8px; overflow:hidden; }
+.card.correct { border-color:#22543d; }
+.card.wrong { border-color:#7f1d1d; }
+.card-head { padding:10px 12px 6px; display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; }
+.tags { display:flex; gap:5px; align-items:center; flex-wrap:wrap; }
+.qnum { font-size:9px; font-weight:700; color:#64748b; }
+.tag { font-size:8px; padding:2px 7px; border-radius:8px; font-weight:600; }
+.tag-mastered { background:#16532822; color:#4ade80; }
+.tag-needs { background:#78350f22; color:#fbbf24; }
+.tag-weak { background:#7f1d1d22; color:#f87171; }
+.tag-new { background:#1e3a8a22; color:#93c5fd; }
+.tag-m { background:#1e1e2e; color:#64748b; }
+.score-stat { font-size:8px; color:#64748b; }
+.qtext { padding:0 12px 8px; font-size:13px; line-height:1.55; font-weight:500; }
+.opts { padding:0 12px 10px; display:flex; flex-direction:column; gap:4px; }
+.opt { padding:9px 11px; font-size:12px; text-align:left; border-radius:7px; border:1px solid #1e1e2e; background:#0c0c18; color:#cbd5e1; cursor:pointer; line-height:1.45; width:100%; }
+.opt:disabled { cursor:default; }
+.opt .letter { font-weight:700; margin-right:5px; color:#64748b; }
+.opt.right { background:#052e1622; border-color:#16a34a; color:#4ade80; font-weight:700; }
+.opt.right .letter { color:#4ade80; }
+.opt.picked-wrong { background:#450a0a22; border-color:#dc2626; color:#f87171; }
+.opt.dimmed { opacity:0.45; }
+.explanation { padding:9px 12px; border-top:1px solid #1e1e2e; background:#0a0a14; font-size:11px; color:#94a3b8; line-height:1.7; }
+.explanation .verdict { font-size:10px; font-weight:700; margin-right:5px; }
+.verdict.ok { color:#4ade80; }
+.verdict.no { color:#f87171; }
+.final { text-align:center; padding:24px 18px; background:#14141e; border-radius:12px; border:2px solid #d4a843; margin-top:8px; }
+.final-pct { font-size:44px; font-weight:800; }
+.final-detail { font-size:13px; color:#94a3b8; margin-top:3px; }
+.final-msg { font-size:11px; color:#64748b; margin-top:8px; line-height:1.5; }
+.final-btn { margin-top:14px; padding:8px 18px; border-radius:18px; border:1px solid #d4a843; background:#d4a84322; color:#d4a843; cursor:pointer; font-weight:700; font-size:11px; margin-right:6px; }
+.empty { text-align:center; padding:30px; color:#64748b; font-size:13px; }
+.empty a { color:#d4a843; cursor:pointer; text-decoration:underline; background:none; border:none; font-size:inherit; }
+.legend { font-size:9px; color:#64748b; margin-top:6px; line-height:1.5; }
+.legend span { font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div>
+        <div class="title">D077 Marketing</div>
+        <div class="subtitle" id="subtitle">100 questions · scenario-based</div>
+      </div>
+      <div class="stats">
+        <div><div class="stat-label">Done</div><div class="stat-val" id="statDone">0/100</div></div>
+        <div><div class="stat-label">Score</div><div class="stat-val" id="statScore" style="color:#64748b">—</div></div>
+      </div>
+    </div>
+    <div class="filters">
+      <button class="fbtn on" id="fAll" onclick="setFilter('all')">All</button>
+      <button class="fbtn" id="fWeak" onclick="setFilter('weak')">⚠️ Drill Weak</button>
+      <button class="fbtn" id="fUnseen" onclick="setFilter('unseen')">🆕 Unseen</button>
+      <button class="fbtn" id="fPreOA" onclick="setFilter('preoa')" style="border-color:#dc2626" title="Your persistent miss patterns">🎯 Pre-OA Drill</button>
+      <button class="sbtn" onclick="newSession()">↻ Shuffle</button>
+      <button class="rbtn" onclick="confirmReset()" id="resetBtn">Reset</button>
+    </div>
+    <div class="mod-chips" id="modChips">
+      <button class="mchip on" data-mod="all" onclick="toggleMod('all')">All</button>
+      <button class="mchip" data-mod="1" onclick="toggleMod('1')">M1 Mix</button>
+      <button class="mchip" data-mod="2" onclick="toggleMod('2')">M2 Plan</button>
+      <button class="mchip" data-mod="3" onclick="toggleMod('3')">M3 Research</button>
+      <button class="mchip" data-mod="4" onclick="toggleMod('4')">M4 Growth</button>
+      <button class="mchip" data-mod="5" onclick="toggleMod('5')">M5 CRM</button>
+      <button class="mchip" data-mod="6" onclick="toggleMod('6')">M6 Segment</button>
+      <button class="mchip" data-mod="7" onclick="toggleMod('7')">M7 Consumer</button>
+      <button class="mchip" data-mod="8" onclick="toggleMod('8')">M8 Selling</button>
+      <button class="mchip" data-mod="9" onclick="toggleMod('9')">M9 B2B/Neg</button>
+    </div>
+    <div class="legend">
+      <span style="color:#4ade80">✅ Mastered</span> = 80%+ correct · 
+      <span style="color:#fbbf24">⚠️ Needs Work</span> = 50-79% · 
+      <span style="color:#f87171">🔴 Weak</span> = below 50% · 
+      <span style="color:#93c5fd">🆕 New</span> = not yet attempted<br>
+      <span style="color:#94a3b8">Tap modules to select multiple. "All" toggles entire selection on/off.</span>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="main"></div>
+
+<script>
+var Q=[
+// ── MODULE 1: Marketing Mix & Environment ──
+{id:1,m:1,q:"A car dealership organizes a yearly charity 5K run, with proceeds going to local food banks. Which promotional activity is this?",o:["Personal selling","Public relations","Guerilla marketing","Electronic commerce"],c:1,e:"Public relations = building goodwill through community involvement, charitable events, and sponsorships. Not direct selling, not unconventional guerilla tactics, not e-commerce."},
+{id:2,m:1,q:"A coffee shop chain donates beverages at a community fundraiser to boost local awareness of its new locations. Which element of the marketing mix is this?",o:["Place","Price","Product","Promotion"],c:3,e:"Sponsorship and goodwill activities = PROMOTION (specifically public relations). The goal is awareness, not distribution. Don't get tricked by 'location' — the location of the event isn't Place; the activity itself is promotional."},
+{id:3,m:1,q:"A retailer directs shoppers to its secure online store via a clickable link to complete their purchases. The website itself represents which element of the marketing mix?",o:["Place","Price","Product","Promotion"],c:0,e:"The website is the DISTRIBUTION CHANNEL — where the transaction happens. That's PLACE. Don't confuse: a link inside a promotional ad is promotion, but the website where customers buy is Place."},
+{id:4,m:1,q:"A used-fashion retailer messages its app users every week notifying them of newly listed items. Which element of the marketing mix is this?",o:["Place","Price","Product","Promotion"],c:3,e:"Notifications/alerts designed to drive interest and purchases = Promotion. Communication with customers about products = promotional activity."},
+{id:5,m:1,q:"A laptop manufacturer launches a model featuring upgraded video-editing hardware. Which marketing mix element does this represent?",o:["Place","Price","Product","Promotion"],c:2,e:"New features, capabilities, design = PRODUCT. The Product element includes features, quality, packaging, branding, and warranties."},
+{id:6,m:1,q:"Which of the following is a CONTROLLABLE element of the marketing environment?",o:["Legal","Social","Cultural","Promotion"],c:3,e:"Only the 4 Ps (Product, Price, Place, Promotion) are CONTROLLABLE. Everything else — legal, social, cultural, technological, economic — is external/uncontrollable."},
+{id:7,m:1,q:"Scientific breakthroughs can render existing products obsolete while creating entirely new ones. Which uncontrollable factor does this describe?",o:["Legal","Political","Competition","Technological"],c:3,e:"Technological change = uncontrollable force that creates AND destroys products (DVDs → streaming; landlines → smartphones)."},
+{id:8,m:1,q:"Which of these is a CONTROLLABLE element a marketer manages directly?",o:["Governmental regulations","Promotional campaigns","Technological advances","Social factors"],c:1,e:"Promotional campaigns = one of the 4 Ps = controllable. The other three are external forces beyond the company's control."},
+{id:9,m:1,q:"A marketer must adjust their plan because customer attitudes, generational preferences, and lifestyle values are shifting. Which uncontrollable factor is this?",o:["Competitive","Technological","Political-legal","Socio-cultural"],c:3,e:"Demographics, attitudes, values, generation gaps = Socio-cultural. These shape consumer preferences over time."},
+{id:10,m:1,q:"Two gas station owners agree to both raise prices simultaneously to $5/gallon because they're the only stations within 30 miles. What illegal tactic is this?",o:["Price fixing","Bait and switch","Predatory pricing","Price discrimination"],c:0,e:"Price fixing = competitors AGREEING together to set prices. Predatory = below-cost to kill competition. Bait-and-switch = lure with low price, switch to high. Discrimination = different prices for different customers."},
+{id:11,m:1,q:"A supplement company advertises only the benefits of its product, leaving out potential side effects. To be ethical, the company should:",o:["Engage with the market","Promote product benefits","Use transparent marketing","Deliver the promised value"],c:2,e:"Transparent marketing = honestly disclosing BOTH benefits and risks. Hiding side effects is deceptive."},
+{id:12,m:1,q:"Which of these is an ethical marketing practice tied to PROMOTION?",o:["Identifying paid testimonials","Discounting post-season prices","Disclosing supply chain practices","Testing new products with customers"],c:0,e:"Disclosing paid testimonials = promotion ethics (FTC requirement). Supply chain = distribution ethics. Discounts = price. Testing = product."},
+{id:13,m:1,q:"A clothing brand audits its overseas factories to guarantee workers are paid fairly and treated well. Which ethical marketing practice does this represent?",o:["Pricing lower than competitors","Advertising commitment to quality","Providing improved product design","Ensuring fair labor conditions"],c:3,e:"PRE-OA STICKY CONCEPT: Distribution ethics = supply chain ethics = FAIR LABOR CONDITIONS. The other options relate to price, promotion, and product. Distribution covers everyone in the supply chain."},
+{id:14,m:1,q:"A coder builds a tax-optimization tool that nothing else on the market can match. They charge premium prices, knowing competitors will need years to catch up. Which pricing strategy?",o:["Penetration pricing","Leader pricing","Price skimming","Competitive pricing"],c:2,e:"Price skimming = high initial price for innovative product, lowered as competition arrives. Penetration = LOW initial price for fast market share. Leader = below-cost loss leader."},
+{id:15,m:1,q:"What outcome does the price of a product most directly determine for a company?",o:["Value","Profit","Sales","Promotion"],c:1,e:"Price - Cost = Profit. While price influences sales volume, what it DETERMINES is profit margin."},
+{id:16,m:1,q:"What term describes the income a business receives from selling its goods or services?",o:["Revenue","Profit","Sales","Market share"],c:0,e:"Revenue = total income from sales (before costs). Profit = revenue minus costs."},
+{id:17,m:1,q:"Which controllable element is part of the marketing mix?",o:["Legal","Product","Political","Environmental"],c:1,e:"Product is one of the 4 Ps = controllable. Legal, political, environmental are uncontrollable external forces."},
+{id:18,m:1,q:"What are the 4 Ps of the marketing mix?",o:["Price, Product, People, Place","Purpose, Product, People, Place","Price, Product, Promotion, Profit","Price, Product, Promotion, Place"],c:3,e:"The 4 Ps: Price, Product, Promotion, Place. NOT People, NOT Purpose, NOT Profit."},
+{id:19,m:1,q:"Which marketing mix component handles warehousing, distribution channels, and shipping?",o:["Product","Place","Promotion","Price"],c:1,e:"PLACE covers logistics, channel management, transportation, and making products available where customers can buy them."},
+{id:20,m:1,q:"A representative meets a prospective buyer in person to demonstrate a new product. Which promotion type is this?",o:["Influencer marketing","Content marketing","E-commerce","Personal selling"],c:3,e:"Face-to-face demonstration to a prospect = Personal selling — direct human interaction in the sales process."},
+{id:21,m:1,q:"Sales reach their highest level but growth flattens as competitors saturate the market. Which product life cycle stage is this?",o:["Introduction","Growth","Maturity","Decline"],c:2,e:"Maturity = peak sales, slowing growth, intense competition, eventual profit decline as pricing pressure mounts."},
+{id:22,m:1,q:"Which framework analyzes Political, Economic, Socio-cultural, and Technological factors affecting a business?",o:["SWOT","PEST","BCG","SMART"],c:1,e:"PEST = Political, Economic, Socio-cultural, Technological — the four major uncontrollable external forces."},
+{id:23,m:1,q:"A new gym chain offers $5/month memberships for the first year to quickly grow its customer base before raising rates. Which pricing strategy?",o:["Price skimming","Penetration pricing","Prestige pricing","Bundle pricing"],c:1,e:"Penetration pricing = low initial price to capture market share quickly. Skimming = opposite (high initial, lowered over time)."},
+{id:24,m:1,q:"A designer handbag brand maintains $3,000 prices because lowering would dilute its luxury reputation. Which pricing strategy?",o:["Leader pricing","Competitive pricing","Prestige pricing","Penetration pricing"],c:2,e:"Prestige pricing = deliberately high prices to signal exclusivity and luxury. Cutting prices would damage demand for status-driven brands."},
+{id:25,m:1,q:"A franchise such as Dunkin' Donuts operates as independent owners running locations under shared branding and contracts. What vertical marketing system is this?",o:["Corporate VMS","Administered VMS","Contractual VMS","Horizontal marketing system"],c:2,e:"FRANCHISE = Contractual VMS. Independent firms joined by contract. Corporate = single ownership. Administered = dominant member coordinates."},
+{id:26,m:1,q:"A salesperson tells a customer the advertised $300 vacuum is sold out and steers them to a $900 model, even though $300 boxes are visible nearby. What is this tactic?",o:["Price fixing","Bait and switch","Predatory pricing","Price discrimination"],c:1,e:"Bait and switch = advertise low to attract, then push higher-priced product. Illegal in most jurisdictions."},
+{id:27,m:1,q:"Which concept refers to the number of product VERSIONS within a single product line?",o:["Mix","Depth","Width","Brand"],c:1,e:"DEPTH = versions within ONE line (e.g., toothpaste in mint/whitening/sensitive/kids). Width = number of different lines. Mix = total of all lines + versions."},
+
+// ── MODULE 2: Marketing Planning Process ──
+{id:28,m:2,q:"After implementing a marketing plan, the planning process must respond to which type of variables?",o:["Fiscal","Strategic","Objectives","Uncontrollable"],c:3,e:"Once a plan is live, marketers monitor and adjust to UNCONTROLLABLE variables (competitor moves, economic shifts, regulations) affecting performance."},
+{id:29,m:2,q:"A marketing manager wants to leverage forces OUTSIDE the company in building a plan. Which factor should the manager consider?",o:["Market forces","Company resources","Product management","Organizational capabilities"],c:0,e:"OUTSIDE = external = MARKET FORCES (competition, customer behavior, economic conditions). The other three are internal."},
+{id:30,m:2,q:"The marketing director chooses fashion magazines as the channel for a luxury handbag advertising campaign. Which planning step is this?",o:["Developing marketing objectives","Conducting a situational analysis","Implementing strategy and tactics","Monitoring progress of obtaining goals"],c:2,e:"Selecting channels and executing the plan = IMPLEMENTING strategy and tactics. The earlier steps (analysis, objectives) are done; this is execution."},
+{id:31,m:2,q:"What is a primary benefit of conducting a SWOT analysis?",o:["Improving stock price","Increasing market share","Encouraging realistic planning","Enhancing stakeholder perceptions"],c:2,e:"SWOT forces honest assessment of internal strengths/weaknesses and external opportunities/threats — promoting realistic, grounded planning."},
+{id:32,m:2,q:"A product holds high market share in a slow-growth industry. In the BCG matrix, this product is a:",o:["Dog","Star","Cash cow","Question mark"],c:2,e:"CASH COW = high share + low growth. Mature, profitable product that funds other initiatives. Star = high + high. Question Mark = low + high. Dog = low + low."},
+{id:33,m:2,q:"A manager evaluating each product line to make sound portfolio decisions should use which tool?",o:["BCG matrix","Acid test ratio","SWOT analysis","Porter's five forces"],c:0,e:"BCG Matrix = PORTFOLIO management tool. Maps each product into Star/Cash Cow/Question Mark/Dog. Porter's = industry analysis."},
+{id:34,m:2,q:"Before creating strategic and tactical plans, what must FIRST be established?",o:["Vision","Pricing","Actions","Promotion"],c:0,e:"Vision (and mission) come FIRST — they define direction. Strategic and tactical plans then work toward that vision."},
+{id:35,m:2,q:"A marketing plan helps the entire organization align efforts behind a single direction. What is this unified direction called?",o:["Market share","Common vision","Situational analysis","Organizational capabilities"],c:1,e:"Common vision = the unified direction created by the marketing plan. Market share is a metric; situational analysis is a step."},
+{id:36,m:2,q:"Which component of marketing planning uses situational analysis findings to address the target customer's needs?",o:["Threats","Strategy","Weaknesses","Opportunities"],c:1,e:"STRATEGY = the planning component that USES situational analysis to determine how to meet customer needs. The other options are SWOT elements that feed INTO strategy."},
+{id:37,m:2,q:"A marketing team holds quarterly check-ins to evaluate whether past campaigns hit their targets. Which planning activity is this?",o:["Defining marketing objectives","Executing strategy and tactics","Completing a situational analysis","Monitoring and controlling outcomes"],c:3,e:"Reviewing AFTER execution = Monitoring and Controlling. Situational analysis happens BEFORE planning, not after."},
+{id:38,m:2,q:"A company designs its marketing so that every individual customer is treated as a unique segment. Which type of marketing is this?",o:["Micro marketing","Nano marketing","Niche marketing","Single marketing"],c:0,e:"MICRO MARKETING = tailoring to individual customers, one-to-one. Niche = small specific segment (still a group). 'Single' isn't standard terminology."},
+{id:39,m:2,q:"Which marketing plan section details the financial allocations, projected revenues, and product costs?",o:["Budget","Executive summary","Objective and issues","Mission statement"],c:0,e:"BUDGET = financial section covering allocations, projected revenue, and costs of goods."},
+{id:40,m:2,q:"Marketing objectives should be Specific, Measurable, Achievable, Relevant, and Time-bound. What is this called?",o:["SWOT","SMART","BCG","PEST"],c:1,e:"SMART = the framework for writing good objectives. SWOT = SW + OT analysis. BCG = portfolio. PEST = environment."},
+{id:41,m:2,q:"What is the first step in the marketing planning process?",o:["Examine marketing opportunities","Select target markets","Create the marketing mix","Manage marketing efforts"],c:0,e:"FIRST: Examine marketing opportunities (situational analysis). You must understand the landscape BEFORE selecting targets or building a mix."},
+{id:42,m:2,q:"A manager evaluates industry rivalry, threat of new entrants, substitute products, buyer power, and supplier power. Which framework?",o:["BCG matrix","SWOT analysis","Porter's Five Forces","Pro forma statement"],c:2,e:"Those five factors define Porter's Five Forces — analyzes industry competitiveness and profitability."},
+{id:43,m:2,q:"Recent legislation makes it easier for the company to enter a new foreign market. In SWOT, this is:",o:["Threats","Strengths","Weaknesses","Opportunities"],c:3,e:"Favorable EXTERNAL conditions = Opportunities. SW are internal; OT are external."},
+{id:44,m:2,q:"A manager wants to focus the team's efforts to achieve the best possible outcome. Which business component achieves this?",o:["Objectives","Capabilities","Market share","Situational analysis"],c:0,e:"Objectives provide measurable targets that focus and direct the team's efforts toward results."},
+{id:45,m:2,q:"A company analyzes internal and external environments, identifies target market needs, and creates a plan to fulfill its mission and goals. What has it produced?",o:["Tactical planning","Marketing plan","Performance analysis","Tactical implementation"],c:1,e:"This describes a MARKETING PLAN — the comprehensive document combining environmental analysis, target identification, and the path to objectives."},
+{id:46,m:2,q:"A new competitor enters a market with established players. The likely consequence is:",o:["Less competition between current rivals","The bargaining power of buyers will decline","Industry profits will rise overall","Established players will invest more to defend share"],c:3,e:"Existing firms must invest more (in marketing, innovation, or pricing) to protect their share when a new rival enters."},
+{id:47,m:2,q:"What is the main purpose of marketing planning?",o:["To understand a company's overall strategy to attract and convert buyers","To gather data on previous and present market trends","To identify marketing goals and ensure alignment with the organization's mission and vision","To help businesses comprehend demographic segments of their market"],c:2,e:"PRIMARY PURPOSE = identify goals aligned with mission and vision. Strategy attracts/converts (an outcome). Data gathering and demographic understanding are tools, not the purpose."},
+
+// ── MODULE 3: Marketing Research ──
+{id:48,m:3,q:"When collecting PRIMARY data directly from people, which ethical guideline applies?",o:["Maintaining data transparency","Separating groups by demographics","Answering all questions from participants","Avoiding plagiarism when gathering customer information"],c:0,e:"Primary research = collecting directly from people. Transparency about how data is used = the key ethical principle."},
+{id:49,m:3,q:"What is a limitation of using primary data sources?",o:["Less flexibility in data collection","Requires expertise in data collection","Data may have changed during the period","Fails to directly address the needed information"],c:1,e:"Primary data REQUIRES EXPERTISE in research design, sampling, and analysis. Primary data IS flexible AND addresses your needs (those are strengths). Data going stale = secondary data limitation."},
+{id:50,m:3,q:"In marketing research, reliability means:",o:["The data measures what it claims to","Results are consistent when the study is repeated","The sample is large enough to generalize","The research follows ethical standards"],c:1,e:"RELIABILITY = consistency on repeat. VALIDITY = measuring what you intend. Two different concepts often confused."},
+{id:51,m:3,q:"A researcher quietly watches shoppers in their natural environment to learn how they choose products. What kind of research is this?",o:["Survey research","Ethnographic research","Experimental research","Syndicated research"],c:1,e:"Ethnographic = observing people in their NATURAL environment without interference. Reveals actual (not stated) behavior."},
+{id:52,m:3,q:"In a focus group, members suppress their views to align with the dominant opinion. What's this phenomenon called?",o:["Sampling bias","Groupthink","Response bias","Selection error"],c:1,e:"Groupthink = members conform to majority view, reducing diversity and quality of insights gathered."},
+{id:53,m:3,q:"When gathering SECONDARY data, what is the key ethical consideration?",o:["Obtaining participant consent","Evaluating source credibility","Encouraging independent responses","Ensuring question clarity"],c:1,e:"Secondary data already exists. The ethical concern is whether the source is CREDIBLE before citing it."},
+{id:54,m:3,q:"What is the study of how individuals and organizations acquire, use, and dispose of products and services?",o:["Market research","Market analysis","Product research","Consumer behavior"],c:3,e:"Consumer behavior = study of acquisition, use, and disposal. Market research is the broader investigative function."},
+{id:55,m:3,q:"A closed-ended survey question requires respondents to:",o:["Write an essay response","Choose from predefined answers","Rate feelings on continuous scales only","Speak with an interviewer"],c:1,e:"Closed-ended = predefined choices (multiple choice, yes/no, scales). Open-ended = free-form."},
+
+// ── MODULE 4: Growth Strategies ──
+{id:56,m:4,q:"After a competitor offered discounts that hurt its bookings, a tour company runs its own discount campaign to recapture lost tourists. Which growth strategy?",o:["Diversification","Market penetration","Market development","New product development"],c:1,e:"Same product, same market — just gaining share back. That's MARKET PENETRATION. No new product was made; no new market entered."},
+{id:57,m:4,q:"A smartphone manufacturer responds to frustrated long-time customers by adding new features to satisfy them. Which growth strategy?",o:["Diversification","Market penetration","Market development","Product development"],c:3,e:"NEW or improved product for EXISTING market = PRODUCT DEVELOPMENT. Same customer base, enhanced offering."},
+{id:58,m:4,q:"An apparel brand became #1 in the U.S. by winning customers away from rival brands. Which growth strategy?",o:["Diversification","Market penetration","Market development","Product development"],c:1,e:"PRE-OA STICKY CONCEPT: Winning competitor customers with EXISTING products in the SAME market = MARKET PENETRATION. No new product; no new market. Just taking share."},
+{id:59,m:4,q:"An air conditioning company expands by selling its current product lines to new states it hasn't reached before. Which growth strategy?",o:["Diversification","Market penetration","Market development","Product development"],c:2,e:"MARKET DEVELOPMENT = existing products to NEW geographies/segments/channels. Product unchanged; market expanded."},
+{id:60,m:4,q:"Chick-fil-A begins selling bottles of its signature sauce in grocery store aisles. Which growth strategy?",o:["Market penetration","Market development","Product development","Diversification"],c:1,e:"Same product (sauce) reaching customers through NEW CHANNELS (grocery stores) = MARKET DEVELOPMENT. Reaching new buyers beyond restaurant patrons."},
+{id:61,m:4,q:"Amazon began selling books online, then expanded into electronics, streaming, cloud computing, and grocery delivery. Which growth strategy?",o:["Market penetration","Market development","Product development","Diversification"],c:3,e:"NEW products in NEW markets = DIVERSIFICATION. Amazon entered entirely new product categories serving new customer types."},
+{id:62,m:4,q:"In the Ansoff Matrix, selling EXISTING products to EXISTING customers represents which strategy?",o:["Market penetration","Market development","Product development","Diversification"],c:0,e:"MARKET PENETRATION = existing products + existing markets. The other three involve changing one or both dimensions."},
+{id:63,m:4,q:"An RV maker plans a food truck conversion package aimed at its current RV customer base. Which growth strategy?",o:["Diversification","Market penetration","Market development","Product development"],c:3,e:"NEW product (conversion package) for EXISTING market (RV owners) = PRODUCT DEVELOPMENT. Not diversification — same customers."},
+
+// ── MODULE 5: CRM ──
+{id:64,m:5,q:"Which term describes ALL the efforts a company makes to create customer value and build lasting relationships?",o:["Marketing strategy","Marketing mix","Market segmentation","Marketing analysis"],c:0,e:"PRE-OA STICKY CONCEPT: MARKETING STRATEGY = the umbrella covering all value-creation and relationship-building efforts. Marketing mix (4 Ps) is just one component of strategy."},
+{id:65,m:5,q:"Which equity driver evaluates how UNIQUE a product is compared to its competitors?",o:["Value","Brand","Retention","Customer"],c:1,e:"BRAND equity = perception of UNIQUENESS and differentiation. VALUE equity = perception of WORTH. Don't confuse these."},
+{id:66,m:5,q:"Which equity driver assesses the WORTH of a company's product to the customer?",o:["Value","Brand","Retention","Customer"],c:0,e:"VALUE equity = customer's assessment of what the product is WORTH (benefits vs cost). Brand = uniqueness assessment. Often confused."},
+{id:67,m:5,q:"What is the most critical factor for achieving customer satisfaction?",o:["Customer expectations","Customer identification","Customer empowerment","Reliable customer measures"],c:0,e:"Customer satisfaction = product meets or exceeds EXPECTATIONS. Setting realistic expectations and delivering on them is the core driver."},
+{id:68,m:5,q:"A retailer's promotional emails include a link letting recipients unsubscribe from future communications. Which fair information practice principle is this?",o:["Notice","Choice","Access","Security"],c:1,e:"CHOICE = giving customers the option to opt-in or opt-out. Notice = announcing collection. Access = view/edit data. Security = protecting it."},
+{id:69,m:5,q:"A retailer's website lets customers log in and update their saved address, payment, and preferences. Which fair information principle is this?",o:["Access","Choice","Notice","Security"],c:0,e:"ACCESS = customers can VIEW and EDIT their stored data. Choice = opt-in/out. Notice = telling them what's collected."},
+{id:70,m:5,q:"A company maintains records of every prospect and customer interaction to improve service and target marketing. What type of information is this?",o:["Customer data","Industry intelligence","Government statistics","Shareholder research"],c:0,e:"Customer data = CRM information about individual interactions, touchpoints, and transactions."},
+{id:71,m:5,q:"An online retailer offering 2-day shipping must also defend against hackers stealing customer info. Which CRM challenge does this represent?",o:["Training","Customer ignorance","Data privacy","Customer support"],c:2,e:"Data privacy = a major CRM challenge — protecting customer information from unauthorized access while still leveraging it for service."},
+{id:72,m:5,q:"Which factor MOST DIRECTLY drives strong relationships, profit gains, and customer lifetime value?",o:["Market saturation","Price skimming","Customer groups","Marketing activities"],c:3,e:"Marketing activities (communication, service, engagement, follow-up) directly shape relationship strength and CLV."},
+{id:73,m:5,q:"Customer Lifetime Value (CLV) is calculated by combining:",o:["Only the customer's most recent purchase","Average purchase value × purchase frequency × customer lifespan","Total marketing spend ÷ number of customers","Annual revenue ÷ customer count"],c:1,e:"CLV factors in average purchase value, frequency, and length of relationship — estimating FULL relationship value, not one transaction."},
+{id:74,m:5,q:"The CAN-SPAM Act primarily regulates:",o:["In-store promotional displays","Commercial email and required opt-out mechanisms","Television advertising content","Product labeling requirements"],c:1,e:"CAN-SPAM = federal law on commercial email — accurate sender info, truthful subject lines, easy unsubscribe."},
+{id:75,m:5,q:"What are the four fair information practice principles in an electronic marketplace?",o:["Notice, Choice, Access, Security","Notify, Consent, Collect, Secure","Inform, Permit, Manage, Protect","Display, Allow, Update, Encrypt"],c:0,e:"NOTICE (announce collection), CHOICE (opt-in/out), ACCESS (view/edit data), SECURITY (protect data). Memorize these four."},
+
+// ── MODULE 6: Segmentation, Targeting, Positioning ──
+{id:76,m:6,q:"Target marketing achieves the best results when:",o:["The company tries to serve everyone","Management decides resources are unlimited","The marketing mix is genuinely relevant to the targeted customer","Marketing staff rotate through other departments"],c:2,e:"Targeting works when the marketing mix actually fits the chosen segment's needs. Trying to please everyone (mass marketing) defeats targeting."},
+{id:77,m:6,q:"A marketing manager wants to gauge whether the value proposition is resonating with target customers. Which factor measures effectiveness?",o:["The customer's need for further product research","The customer's TRUST in the product's benefits and value","The customer's willingness to assume competitor value equivalence","The customer's tendency to assume universal benefits"],c:1,e:"Value proposition effectiveness = whether customers TRUST the claimed benefits. Without trust, no value proposition works."},
+{id:78,m:6,q:"A bank targets recent HIGH SCHOOL GRADUATES with student loan offers. What segmentation strategy is this?",o:["Geographic","Demographic","Psychographic","Product-related"],c:1,e:"Age/life stage = DEMOGRAPHIC segmentation. Demographics include age, gender, income, education, family status."},
+{id:79,m:6,q:"A credit card company segments customers by how often they use the card and rewards heavy users with bonus points. What segmentation is this?",o:["Geographic","Demographic","Product-related","Psychographic"],c:2,e:"Segmenting by HOW customers USE the product (frequency, loyalty, benefits sought) = Product-related (also called behavioral)."},
+{id:80,m:6,q:"A boutique markets a luxury fragrance line to customers who identify with a 'high-end lifestyle' aesthetic. What segmentation variable is this?",o:["Geographic","Demographic","Psychographic","Product-related"],c:2,e:"Lifestyle, values, aspirations, attitudes = PSYCHOGRAPHIC segmentation. Demographics measure WHO; psychographics measure HOW they think."},
+{id:81,m:6,q:"When a company sells the SAME product to ALL markets without segmenting, which approach is being used?",o:["Mass marketing","Personal selling","Differentiated marketing","Relationship management"],c:0,e:"Mass marketing (undifferentiated) = ONE product + ONE message + ALL markets. No segmentation."},
+{id:82,m:6,q:"A rare-stamp convention collects attendee contact info and later markets stamp products only to that specific group. Which targeting strategy?",o:["Micro-marketing","Concentrated","Differentiated","Undifferentiated"],c:1,e:"CONCENTRATED = focusing ALL marketing on a single, narrowly-defined segment (rare stamp collectors who attended). Different from micro (individual-level) or differentiated (multiple segments)."},
+{id:83,m:6,q:"What MUST be included in a positioning statement?",o:["Marketing mix","Target market","Timeline for execution","Quantitative objectives"],c:1,e:"A positioning statement defines: WHO (target market), WHAT (product category), WHY (differentiator). Target market is REQUIRED. Objectives/timelines belong in the marketing plan, not positioning."},
+{id:84,m:6,q:"A marketing manager creates a 2x2 visual mapping competitors based on two key buying criteria. Which technique is this?",o:["Marketing mix","Creative brief","Positioning map","Environmental analysis"],c:2,e:"Positioning map = visual placement of YOUR brand vs competitors on key dimensions (price vs quality, traditional vs modern, etc.)."},
+{id:85,m:6,q:"Which type of marketers focus on individuals buying products for PERSONAL use?",o:["B2C","B2B","Customers","Consumers"],c:0,e:"B2C (Business-to-Consumer) = marketers selling to individuals for personal use. B2B = selling to organizations. 'Consumers' is the audience, not the marketer type."},
+{id:86,m:6,q:"To effectively reach each segment of the consumer market, marketing teams must create what?",o:["Fiscal plans","A tailored marketing mix","B2B marketing plan","Research and development"],c:1,e:"Each segment needs its OWN tailored marketing mix (product, price, place, promotion). That's how differentiated targeting works."},
+{id:87,m:6,q:"A Super Bowl commercial designed to reach the widest possible audience exemplifies which approach?",o:["Mass marketing","Personal selling","Business-to-business","Product differentiation"],c:0,e:"Reaching the LARGEST possible audience with one message = Mass marketing. Maximum reach, no segmentation."},
+{id:88,m:6,q:"Choosing a specific market segment to be the focus of marketing efforts is called:",o:["Mix","Targeting","Niche","Differentiation"],c:1,e:"TARGETING = selecting which segment(s) to focus on. Niche = a very narrow sub-segment. Differentiation = standing out from competitors."},
+{id:89,m:6,q:"When a company identifies its target market, which factor becomes used more EFFICIENTLY?",o:["End users","Potential users","Fiscal resources","Legal compliance"],c:2,e:"Targeting enables efficient use of FISCAL RESOURCES (the marketing budget) by focusing spending on promising segments rather than spraying broadly."},
+{id:90,m:6,q:"A mattress chain runs different rebate tiers and different commercials for each mattress level to reach varied buyers. Which targeting strategy?",o:["Concentrated","Differentiated","Micromarketing","Undifferentiated"],c:1,e:"DIFFERENTIATED = different marketing mixes for different segments. Concentrated focuses on one segment; differentiated covers several with tailored mixes."},
+{id:91,m:6,q:"Which is NOT a common segmentation type?",o:["Demographic","Geographic","Family Size","Behavioral"],c:2,e:"The four common types: Demographic, Geographic, Psychographic, Behavioral. Family size is a VARIABLE WITHIN demographic — not a separate category."},
+
+// ── MODULE 7: Consumer Decision-Making ──
+{id:92,m:7,q:"Which example reflects an INTERNAL source for decision-making?",o:["Watching a product demonstration","Reading online product reviews","Drawing on your own past experience with a product","Asking a friend about their experience"],c:2,e:"INTERNAL = your OWN memory, knowledge, past experiences. EXTERNAL = demos, reviews, friends, ads — anything coming from outside you."},
+{id:93,m:7,q:"Which personal influence is the inner drive to act in order to satisfy a need?",o:["Learning","Attitude","Motivation","Perception"],c:2,e:"MOTIVATION = inner drive to act. Maslow's hierarchy is a motivation theory. Learning = behavior change from experience. Perception = interpretation of stimuli."},
+{id:94,m:7,q:"Which personal influence is defined as behavior changes resulting from previous experiences?",o:["Learning","Attitude","Motivation","Perception"],c:0,e:"LEARNING = behavior change from previous experience. Easily confused with perception, but they're distinct — perception is how you interpret input."},
+{id:95,m:7,q:"Which interpersonal influence group acts as the most direct consumer unit, with major impact on brand attitudes?",o:["Family","Culture","Society","Leader"],c:0,e:"FAMILY = the closest, most direct consumer unit. Members buy for each other and influence each other daily. Culture is broader and less direct."},
+{id:96,m:7,q:"Which step in the complex decision-making process comes AFTER need recognition?",o:["Buy","Search","Evaluation","Purchase decision"],c:1,e:"Process: Need Recognition → Search → Evaluation → Purchase Decision → Buy → Post-purchase. After recognizing a need, you SEARCH for info."},
+{id:97,m:7,q:"Which step in the complex decision-making process comes AFTER evaluation?",o:["Buy","Search","Need recognition","Purchase decision"],c:3,e:"Process: Need Recognition → Search → Evaluation → Purchase Decision → Buy → Post-purchase. After evaluating, you make a Purchase Decision."},
+{id:98,m:7,q:"For both high- and low-involvement purchases, what is the FINAL step of the decision-making process?",o:["Act","Search","Post-purchase","Purchase decision"],c:2,e:"POST-PURCHASE = the LAST step. Evaluation of satisfaction, dissonance, and whether to repeat purchase or return."},
+{id:99,m:7,q:"A customer compares ten laptop models by reading reviews, comparing specs, testing in-store, and interviewing service technicians before buying. Which problem-solving type is this?",o:["Luxury","Routine","Limited","Extended"],c:3,e:"EXTENDED = high involvement, exhaustive research, many alternatives. The depth shown here is clearly extended."},
+{id:100,m:7,q:"A shopper compares packaged dinners by checking only the sodium content on each nutrition label before deciding. Which problem-solving type?",o:["Limited","Impulse","Routine","Extended"],c:0,e:"PRE-OA STICKY CONCEPT: LIMITED = moderate effort comparing a FEW attributes (just sodium). Extended would mean researching nutrition science, reading studies, etc. The depth of effort defines the type."},
+{id:101,m:7,q:"A customer chooses a specific travel book to gift to a friend who has emotional memories of a past trip. What element of consumer behavior is at work?",o:["Price","Family","Emotion","Society"],c:2,e:"EMOTION drives the purchase here — sentimental memories of the friend's trip motivate the choice."},
+{id:102,m:7,q:"A buyer regrets a recent premium laptop purchase after learning a newer model launches soon. Which type of dissonance?",o:["Reduction","Awareness","Pre-purchase","Post-purchase"],c:3,e:"POST-PURCHASE dissonance (buyer's remorse) = doubt or regret AFTER buying, often triggered by new information."},
+{id:103,m:7,q:"Which Maslow level includes feeling respected and valued by others?",o:["Esteem needs","Self-actualization","Physiological needs","Love and belonging"],c:0,e:"ESTEEM = self-respect, recognition, status, achievement. Fourth level, below self-actualization, above love/belonging."},
+{id:104,m:7,q:"A high-involvement purchase typically involves:",o:["Habitual repeat buying","Expensive or risky products requiring extensive research","Impulse buying at checkout","Buying the same brand without thinking"],c:1,e:"High involvement = significant time, research, and consideration. Usually expensive, risky, or personally important purchases."},
+{id:105,m:7,q:"A consumer buys fair-trade coffee specifically because of the brand's ethical sourcing story. What decision-making approach is this?",o:["Rights approach","Fairness principle","Market orientation","Ethical consumerism"],c:3,e:"Ethical consumerism = purchase decisions driven by social, ethical, or environmental considerations rather than just price/quality."},
+{id:106,m:7,q:"To target luxury vacation home buyers, what must a realtor understand?",o:["How buyers arrive at the decision to purchase a luxury vacation home","Total selling costs","Marketing budget for the property","Sales projections for the quarter"],c:0,e:"Understanding the buyer's DECISION-MAKING PROCESS is essential for targeting effectively. Budgets and projections are operational, not strategic targeting."},
+{id:107,m:7,q:"Which consumer behavior factor reflects others' opinions shaping the decision-making process?",o:["Social","Education","Individual","Psychological"],c:0,e:"SOCIAL factors = influence from family, friends, reference groups, culture, society. All external opinion-driven influences."},
+{id:108,m:7,q:"What aspect of marketing research yields insight into HOW buyers make decisions?",o:["Pricing of goods","Consumer behavior","Advertising effectiveness","Trademarking strategy"],c:1,e:"Consumer behavior research focuses specifically on how and why buyers make purchase decisions."},
+{id:109,m:7,q:"A marketer features a respected community figure as the spokesperson in an ad. What consumer behavior influence is this?",o:["Price range","Product design","Media selection","Reference groups"],c:3,e:"A spokesperson = reference group influence — people the consumer identifies with or aspires to be like, shaping their attitudes/decisions."},
+{id:110,m:7,q:"A large group of people sharing similar heritage represents which interpersonal influence?",o:["Leader","Family","Society","Culture"],c:3,e:"CULTURE = a large group sharing heritage, values, beliefs, customs. The BROADEST interpersonal influence (broader than family or reference groups)."},
+
+// ── MODULE 8: Personal Selling ──
+{id:111,m:8,q:"A systems integrator visits a new dental clinic that needs hardware, software, AND ongoing IT support all bundled together. Which selling approach is this?",o:["Team selling","Solution selling","Consultative selling","Telemarketing"],c:1,e:"SOLUTION SELLING = offering a COMPLETE PACKAGE that solves the customer's problem (hardware + software + support together). Consultative = more advisory; solution = integrated package."},
+{id:112,m:8,q:"A salesperson sends pre-recorded sales messages to potential customers through mobile phones. Which selling method?",o:["Telemarketing","Consulting","Solution selling","Team selling"],c:0,e:"Telemarketing = sales delivered via phone — live or recorded. The channel determines the type."},
+{id:113,m:8,q:"During a sales presentation, a rep asks, 'Would you prefer the red or blue model, and would Tuesday delivery work?' What technique is this?",o:["Trial closing","Handling objections","Prospecting customers","Approaching customers"],c:0,e:"TRIAL CLOSE = asking preference questions to gauge buyer readiness without directly asking for the sale. 'Which one' and 'when' questions are classic trial close indicators."},
+{id:114,m:8,q:"A sales rep asks thoughtful questions to understand the prospect's needs, acts as a partner, recommends the best fit, and builds a long-term trusted advisor relationship. Which selling approach?",o:["Tele-selling","Team selling","Consultative selling","Business-to-business selling"],c:2,e:"CONSULTATIVE SELLING = acting as an ADVISOR/PARTNER, deeply understanding needs, recommending solutions, building long-term trust."},
+{id:115,m:8,q:"Which term refers to a strategic process leading to a deal closure by mutual buyer-seller agreement?",o:["Contract","Proposal","Negotiation","Strategy"],c:2,e:"Negotiation = the process of reaching mutual agreement on terms that close the deal. Contract = the result; proposal = an offer within the process."},
+{id:116,m:8,q:"What is the FIRST step in the personal selling process?",o:["Presentation","Approach","Prospecting","Handling objections"],c:2,e:"PROSPECTING (identifying potential leads) is the FIRST step. Then: Approach (first contact), Presentation, Handling Objections, Close, Follow-up."},
+{id:117,m:8,q:"Which step of personal selling is the FIRST DIRECT INTERACTION with a potential customer?",o:["Prospecting","Presentation","Approach","Handling objections"],c:2,e:"APPROACH = first direct contact with the prospect. Prospecting happens BEFORE direct contact (just identifying leads)."},
+{id:118,m:8,q:"Blogs, wikis, and social media that companies use to engage and sustain customer relationships are called:",o:["Touch points","Print media","Adaptive channels","Negotiation tools"],c:0,e:"Touch points = any point of interaction between company and customer. Digital touch points are now critical for relationship building."},
+{id:119,m:8,q:"What does adaptive selling mean?",o:["Using the same pitch with every customer","Adjusting the sales approach to each customer's needs and style","Selling products that can adapt to users","Adapting prices based on supply"],c:1,e:"Adaptive selling = tailoring approach, language, and recommendations to each customer's unique situation. Opposite of a one-size-fits-all script."},
+{id:120,m:8,q:"A company coordinates many touch points to deliver consistent messages about its product throughout the buyer's journey. Which concept is this?",o:["Solution selling","Relationship selling","B2C marketing","Integrated Marketing Communications (IMC)"],c:3,e:"IMC = coordinating all communication channels and touch points to deliver a UNIFIED, CONSISTENT message across the buyer's journey."},
+{id:121,m:8,q:"Which group serves as the personal link between a buyer and the company?",o:["Salespeople","Marketers","Advertisers","Publicists"],c:0,e:"SALESPEOPLE = the direct, personal link between the company and its customers. They represent the company while understanding individual customer needs."},
+{id:122,m:8,q:"When designing a team selling approach, one key factor a company must consider is:",o:["Who will lead the sales team","How rewards will be distributed","How to offer a complete package","When to communicate with the customer"],c:1,e:"Reward distribution is critical in team selling — without fair compensation, team members won't collaborate effectively. The other options matter but aren't unique to team-selling design."},
+{id:123,m:8,q:"Which activity is performed by salespeople but NOT by marketers?",o:["Implementing the 4 Ps","Designing brand messages","Copywriting advertising","Determining the consumer's risk tolerance for the purchase"],c:3,e:"Assessing INDIVIDUAL buyer risk tolerance happens during one-on-one selling — it's a person-to-person assessment unique to salespeople, not marketers."},
+
+// ── MODULE 9: B2B & Negotiation ──
+{id:124,m:9,q:"In an annual budget meeting, every dollar gained by one department comes directly out of another department's allocation. Which negotiation approach applies?",o:["Deductive","Inductive","Distributive","Mixed"],c:2,e:"DISTRIBUTIVE = fixed pie, zero-sum — one party's gain is another's loss. INTEGRATIVE = expanding the pie for mutual gain."},
+{id:125,m:9,q:"A client tells a sales rep: 'Order the EXACT same product and quantity we got last month.' Which B2B buying situation is this?",o:["New task","Modified rebuy","Straight rebuy","Relationship selling"],c:2,e:"STRAIGHT REBUY = exact reorder with NO changes. Modified rebuy = some change. New task = first-time purchase."},
+{id:126,m:9,q:"A client tells a sales rep: 'Order what we got last month, but ship it to our western plant instead of the eastern one.' Which B2B buying situation?",o:["New task","Modified rebuy","Straight rebuy","Organizational purchasing"],c:1,e:"MODIFIED REBUY = reorder with a CHANGE (different delivery location). Any modification (color, quantity, delivery, specs) makes it modified."},
+{id:127,m:9,q:"A client says: 'Order the same product and quantity, but change the color from blue to red.' Which B2B buying situation?",o:["New task","Modified rebuy","Straight rebuy","Relationship selling"],c:1,e:"Color change = modification = MODIFIED REBUY. Even small changes shift it from straight rebuy to modified."},
+{id:128,m:9,q:"Why do B2C sales processes typically have MORE controls than B2B?",o:["Sales are often large and complex","Personal sales are relationship-based","Pricing is uniform across all customers","Pricing is negotiated between buyer and seller"],c:2,e:"B2C = STANDARDIZED, uniform pricing for all customers (sticker price) = easy to control and audit. B2B = negotiated pricing per customer = harder to standardize."},
+{id:129,m:9,q:"A job candidate researches typical salaries in the area before sitting down to negotiate her offer. Which negotiation stage is this?",o:["Closure","Outcome","Bargaining","Investigation"],c:3,e:"INVESTIGATION (preparation) = gathering info BEFORE negotiations begin. Other stages: Presentation, Bargaining, Closure, Outcome."},
+{id:130,m:9,q:"A hospital's IT team writes detailed software specifications that senior management uses to finalize a purchase decision. Which buying center role is IT playing?",o:["Decider","End user","Influencer","Gatekeeper"],c:2,e:"PRE-OA STICKY CONCEPT: INFLUENCER = provides specs and recommendations that affect the decision. Senior management = DECIDER (final call). The IT team isn't using the software themselves (that's End User — likely the nursing staff)."},
+{id:131,m:9,q:"In a buying center, who are the actual USERS of the purchased product or service?",o:["Deciders","Influencers","End users","Gatekeepers"],c:2,e:"End users = the people who will actually USE the product. Their feedback on functionality and usability often influences the decision."},
+{id:132,m:9,q:"Two managers must share one administrative assistant. They emphasize problem-solving and integrating each other's needs to find a win-win solution. Which conflict-handling style?",o:["Avoidance","Competition","Collaboration","Accommodation"],c:2,e:"COLLABORATION = both parties' needs are fully met through problem-solving. High concern for self AND others. Win-win."},
+{id:133,m:9,q:"In the Dual Concern Model, the COMPETITION style reflects:",o:["Low concern for self, high concern for others","High concern for self, low concern for others","Low concern for both","High concern for both"],c:1,e:"Competition = high concern for own outcomes + low concern for the other party. Win-lose approach."},
+{id:134,m:9,q:"Two parties have incompatible immediate goals but must maintain a long-term working relationship (e.g., boss/employee salary negotiation). Which approach is best?",o:["Inductive","Deductive","Distributive","Integrative"],c:3,e:"INTEGRATIVE = collaborative win-win. Especially important when an ongoing relationship is at stake. Distributive would damage the relationship even if one party 'wins.'"},
+{id:135,m:9,q:"Which salesperson behavior is most likely to cause ethical issues?",o:["Supplying appropriate warnings","Cultivating business relationships","Treating consumers like a commodity","Pricing products far above production costs"],c:2,e:"Treating consumers as commodities (rather than individuals with real needs) prioritizes transactions over genuine service — unethical."},
+
+// ── ADDITIONAL REINFORCEMENT (variations) ──
+{id:136,m:1,q:"How is marketing best defined?",o:["The advertising of products to consumers","The activity of creating, communicating, delivering, and exchanging offerings of value","Selling products to maximize profit","Managing a company's public reputation"],c:1,e:"Marketing = creating, communicating, delivering, and exchanging value. Advertising and selling are just components."},
+{id:137,m:2,q:"In the BCG matrix, which quadrant represents products with HIGH growth potential but LOW market share that require careful evaluation?",o:["Stars","Cash Cows","Question Marks","Dogs"],c:2,e:"Question Marks = high growth + low share. Need heavy investment to become Stars, otherwise they slip into Dogs."},
+{id:138,m:6,q:"A positioning statement should address all of the following EXCEPT:",o:["Target market","Product category","Key benefit or differentiator","Employee compensation"],c:3,e:"Positioning covers WHO (target), WHAT (category), WHY (benefit), and REASON TO BELIEVE. Employee compensation is irrelevant to positioning."},
+{id:139,m:9,q:"What are the five phases of negotiation in correct order?",o:["Investigation, Presentation, Bargaining, Closure, Outcome","Plan, Pitch, Push, Pause, Profit","Identify, Inform, Influence, Implement, Inspect","Research, Reach out, Resolve, Record, Review"],c:0,e:"Five phases: 1) Investigation (prep), 2) Presentation (positions), 3) Bargaining (give-and-take), 4) Closure (agreement), 5) Outcome (results)."},
+{id:140,m:1,q:"A subscription box service sends customers a curated set of seasonal cosmetics each month. Which marketing mix element is the actual delivery channel?",o:["Place","Price","Product","Promotion"],c:0,e:"PLACE = distribution channels and how the product reaches the customer. The monthly delivery system itself is the Place element."},
+{id:141,m:7,q:"A consumer interprets and organizes incoming sensory information based on their existing beliefs and expectations. Which personal influence is this?",o:["Learning","Attitude","Motivation","Perception"],c:3,e:"PERCEPTION = interpretation of stimuli through the lens of beliefs and expectations. Different from learning (behavior changes from experience)."},
+{id:142,m:5,q:"A retailer tells customers via an opening page disclosure exactly what data it collects and why. Which fair information principle?",o:["Notice","Choice","Access","Security"],c:0,e:"NOTICE = telling customers WHAT data is collected and how it will be used. Choice = opt-in/out. Access = view/edit. Security = protect it."},
+{id:143,m:4,q:"A coffee chain begins selling its branded coffee bags through Costco for the first time. Which growth strategy?",o:["Market penetration","Market development","Product development","Diversification"],c:1,e:"Same product (coffee) reaching new customers through a NEW CHANNEL (Costco) = MARKET DEVELOPMENT."},
+{id:144,m:5,q:"Which umbrella concept covers ALL activities aimed at delivering customer value and forming long-term customer relationships?",o:["Marketing strategy","Marketing mix","Market segmentation","Marketing analysis"],c:0,e:"PRE-OA STICKY CONCEPT: MARKETING STRATEGY is the umbrella covering all value-creation and relationship efforts. The marketing mix (4 Ps) is just one subset of strategy."}
+];
+
+
+var MN = {1:"Marketing Mix",2:"Planning",3:"Research",4:"Growth",5:"CRM",6:"Segmentation",7:"Consumer",8:"Selling",9:"B2B/Negotiation"};
+var STORE_KEY = "d077-mkt-v5";
+
+// Pre-OA Drill: questions targeting the 4 persistent miss concepts from attempts 1-3
+// 1) Distribution ethics = fair labor (Q13)
+// 2) Marketing strategy vs marketing mix (Q64, Q144)
+// 3) Limited vs Extended problem-solving (Q99, Q100)
+// 4) Influencer vs End user in buying centers (Q130, Q131)
+// Plus related sticky concepts: market penetration vs product development, prospecting vs approach, BCG cash cow
+var PRE_OA_IDS = {13:1, 27:1, 32:1, 36:1, 47:1, 58:1, 63:1, 64:1, 65:1, 66:1, 91:1, 99:1, 100:1, 116:1, 117:1, 130:1, 131:1, 144:1};
+
+// State
+var answers = {};      // current session answers: {qId: optIdx}
+var history = {};      // all-time history: {qId: {c: correct count, t: total attempts}}
+var order = [];
+var curFilter = "all";
+var selectedMods = {all:true}; // multi-select: {all:true} or {"1":true,"2":true,...}
+var resetConfirming = false;
+var LETTERS = ["A","B","C","D"];
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function loadState() {
+  try {
+    var s = localStorage.getItem(STORE_KEY);
+    if (s) {
+      var d = JSON.parse(s);
+      history = d.history || {};
+      order = d.order || shuffle(Q.map(function(x){return x.id;}));
+      answers = d.answers || {};
+      if (d.selectedMods) selectedMods = d.selectedMods;
+      if (d.curFilter) curFilter = d.curFilter;
+    } else {
+      order = shuffle(Q.map(function(x){return x.id;}));
+    }
+  } catch (e) {
+    order = shuffle(Q.map(function(x){return x.id;}));
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      history: history,
+      order: order,
+      answers: answers,
+      selectedMods: selectedMods,
+      curFilter: curFilter
+    }));
+  } catch (e) {}
+}
+
+function getTag(qId) {
+  var h = history[qId];
+  if (!h || h.t === 0) return {label:"🆕 New", cls:"tag tag-new"};
+  var pct = h.c / h.t;
+  if (pct >= 0.8) return {label:"✅ Mastered " + h.c + "/" + h.t, cls:"tag tag-mastered"};
+  if (pct >= 0.5) return {label:"⚠️ Needs Work " + h.c + "/" + h.t, cls:"tag tag-needs"};
+  return {label:"🔴 Weak " + h.c + "/" + h.t, cls:"tag tag-weak"};
+}
+
+function getFiltered() {
+  var result = [];
+  var useAll = selectedMods.all === true;
+  for (var i = 0; i < order.length; i++) {
+    var item = null;
+    for (var j = 0; j < Q.length; j++) { if (Q[j].id === order[i]) { item = Q[j]; break; } }
+    if (!item) continue;
+    if (!useAll && !selectedMods[String(item.m)]) continue;
+    var h = history[item.id];
+    if (curFilter === "weak") {
+      if (!h || h.t === 0) continue;
+      if (h.c / h.t >= 0.8) continue;
+    } else if (curFilter === "unseen") {
+      if (h && h.t > 0) continue;
+    } else if (curFilter === "preoa") {
+      if (!PRE_OA_IDS[item.id]) continue;
+    }
+    result.push(item);
+  }
+  return result;
+}
+
+function render() {
+  var filtered = getFiltered();
+  var done = 0, right = 0;
+  for (var i = 0; i < filtered.length; i++) {
+    if (answers[filtered[i].id] !== undefined) {
+      done++;
+      if (answers[filtered[i].id] === filtered[i].c) right++;
+    }
+  }
+  var total = filtered.length;
+  var pct = done > 0 ? Math.round(right / done * 100) : 0;
+
+  document.getElementById("subtitle").textContent = total + " questions · scenario-based";
+  document.getElementById("statDone").textContent = done + "/" + total;
+  var scoreEl = document.getElementById("statScore");
+  scoreEl.textContent = done > 0 ? pct + "%" : "—";
+  scoreEl.style.color = pct >= 80 ? "#4ade80" : pct >= 60 ? "#fbbf24" : done > 0 ? "#f87171" : "#64748b";
+
+  var html = "";
+
+  if (total === 0) {
+    var msg = curFilter === "weak" 
+      ? "No weak questions yet! Answer more questions to build your history, or try filter 'All'."
+      : curFilter === "unseen"
+      ? "You've attempted all questions in this module! Try filter 'All' or 'Drill Weak'."
+      : curFilter === "preoa"
+      ? "No Pre-OA Drill questions match your module filter. Try selecting more modules or 'All' modules."
+      : "No questions match this filter.";
+    html = '<div class="empty">' + msg + '<br><br><button onclick="setFilter(\'all\');selectedMods={all:true};updateChipUI();render();" style="margin-top:8px;padding:7px 16px;border-radius:14px;border:1px solid #d4a843;background:transparent;color:#d4a843;cursor:pointer;font-weight:600;font-size:12px;">Show All</button></div>';
+  }
+
+  for (var i = 0; i < filtered.length; i++) {
+    var item = filtered[i];
+    var sel = answers[item.id];
+    var isA = sel !== undefined;
+    var ok = sel === item.c;
+    var cardClass = "card" + (isA ? (ok ? " correct" : " wrong") : "");
+    var tag = getTag(item.id);
+
+    html += '<div class="' + cardClass + '">';
+    html += '<div class="card-head"><div class="tags">';
+    html += '<span class="qnum">Q' + (i + 1) + '</span>';
+    html += '<span class="' + tag.cls + '">' + tag.label + '</span>';
+    html += '<span class="tag tag-m">M' + item.m + ': ' + MN[item.m] + '</span>';
+    html += '</div></div>';
+    html += '<div class="qtext">' + item.q + '</div>';
+    html += '<div class="opts">';
+
+    for (var oi = 0; oi < item.o.length; oi++) {
+      var cls = "opt";
+      if (isA) {
+        if (oi === item.c) cls += " right";
+        else if (oi === sel && !ok) cls += " picked-wrong";
+        else cls += " dimmed";
+      }
+      var dis = isA ? " disabled" : "";
+      html += '<button class="' + cls + '"' + dis + ' onclick="pick(' + item.id + ',' + oi + ')">';
+      html += '<span class="letter">' + LETTERS[oi] + '.</span> ' + item.o[oi];
+      if (isA && oi === item.c) html += " ✓";
+      if (isA && oi === sel && !ok) html += " ✗";
+      html += '</button>';
+    }
+    html += '</div>';
+
+    if (isA) {
+      html += '<div class="explanation">';
+      html += '<span class="verdict ' + (ok ? "ok" : "no") + '">' + (ok ? "✓ Correct" : "✗ Incorrect") + '</span> ';
+      html += item.e + '</div>';
+    }
+    html += '</div>';
+  }
+
+  if (done === total && total > 0) {
+    var c = pct >= 80 ? "#4ade80" : pct >= 65 ? "#fbbf24" : "#f87171";
+    var msg = pct >= 80 
+      ? "Strong! Hit ↻ Shuffle for another round, or use Drill Weak to target your weakest concepts."
+      : pct >= 65 
+      ? "Getting close. Use Drill Weak to focus on the questions you're missing repeatedly."
+      : "Keep studying. Review the explanations on missed questions, then hit Drill Weak.";
+    html += '<div class="final">';
+    html += '<div class="final-pct" style="color:' + c + '">' + pct + '%</div>';
+    html += '<div class="final-detail">' + right + '/' + total + ' correct</div>';
+    html += '<div class="final-msg">' + msg + '</div>';
+    html += '<button class="final-btn" onclick="newSession()">↻ New Session</button>';
+    html += '<button class="final-btn" onclick="setFilter(\'weak\')">⚠️ Drill Weak</button>';
+    html += '</div>';
+  }
+
+  document.getElementById("main").innerHTML = html;
+}
+
+function pick(qId, optIdx) {
+  if (answers[qId] !== undefined) return;
+  var q = null;
+  for (var i = 0; i < Q.length; i++) { if (Q[i].id === qId) { q = Q[i]; break; } }
+  if (!q) return;
+  
+  answers[qId] = optIdx;
+  
+  // Update all-time history
+  if (!history[qId]) history[qId] = {c:0, t:0};
+  history[qId].t += 1;
+  if (optIdx === q.c) history[qId].c += 1;
+  
+  saveState();
+  render();
+}
+
+function setFilter(f) {
+  curFilter = f;
+  document.getElementById("fAll").className = f === "all" ? "fbtn on" : "fbtn";
+  document.getElementById("fWeak").className = f === "weak" ? "fbtn on" : "fbtn";
+  document.getElementById("fUnseen").className = f === "unseen" ? "fbtn on" : "fbtn";
+  var preBtn = document.getElementById("fPreOA");
+  if (preBtn) {
+    preBtn.className = f === "preoa" ? "fbtn on" : "fbtn";
+    preBtn.style.borderColor = "#dc2626";
+    if (f === "preoa") { preBtn.style.background = "#dc262622"; preBtn.style.color = "#f87171"; }
+    else { preBtn.style.background = "transparent"; preBtn.style.color = "#94a3b8"; }
+  }
+  resetConfirming = false;
+  document.getElementById("resetBtn").textContent = "Reset";
+  document.getElementById("resetBtn").style.background = "transparent";
+  saveState();
+  render();
+}
+
+function toggleMod(m) {
+  if (m === "all") {
+    // Toggle: if All is on, clear it (deselect all). If anything else is on or nothing is on, set to All only.
+    if (selectedMods.all === true) {
+      selectedMods = {}; // deselect everything — user can then pick specific modules
+    } else {
+      selectedMods = {all:true};
+    }
+  } else {
+    // If All was on, switch to specific selection
+    if (selectedMods.all) {
+      selectedMods = {};
+    }
+    if (selectedMods[m]) {
+      delete selectedMods[m];
+    } else {
+      selectedMods[m] = true;
+    }
+    // If nothing selected, fall back to All
+    var anySelected = false;
+    for (var k in selectedMods) { if (selectedMods[k]) { anySelected = true; break; } }
+    if (!anySelected) selectedMods = {all:true};
+  }
+  updateChipUI();
+  saveState();
+  render();
+}
+
+function updateChipUI() {
+  var chips = document.querySelectorAll(".mchip");
+  for (var i = 0; i < chips.length; i++) {
+    var mod = chips[i].getAttribute("data-mod");
+    if (selectedMods.all && mod === "all") {
+      chips[i].classList.add("on");
+    } else if (!selectedMods.all && selectedMods[mod]) {
+      chips[i].classList.add("on");
+    } else {
+      chips[i].classList.remove("on");
+    }
+  }
+}
+
+function newSession() {
+  answers = {};
+  order = shuffle(Q.map(function(x){return x.id;}));
+  saveState();
+  window.scrollTo(0,0);
+  render();
+}
+
+function confirmReset() {
+  if (!resetConfirming) {
+    resetConfirming = true;
+    var btn = document.getElementById("resetBtn");
+    btn.textContent = "Confirm Reset All?";
+    btn.style.background = "#7f1d1d44";
+    setTimeout(function(){
+      resetConfirming = false;
+      var b = document.getElementById("resetBtn");
+      if (b.textContent.indexOf("Confirm") > -1) {
+        b.textContent = "Reset";
+        b.style.background = "transparent";
+      }
+    }, 4000);
+    return;
+  }
+  // Full reset
+  answers = {};
+  history = {};
+  order = shuffle(Q.map(function(x){return x.id;}));
+  curFilter = "all";
+  selectedMods = {all:true};
+  document.getElementById("fAll").className = "fbtn on";
+  document.getElementById("fWeak").className = "fbtn";
+  document.getElementById("fUnseen").className = "fbtn";
+  var pre = document.getElementById("fPreOA");
+  if (pre) { pre.className = "fbtn"; pre.style.background = "transparent"; pre.style.color = "#94a3b8"; }
+  updateChipUI();
+  document.getElementById("resetBtn").textContent = "Reset";
+  document.getElementById("resetBtn").style.background = "transparent";
+  resetConfirming = false;
+  try { localStorage.removeItem(STORE_KEY); } catch(e) {}
+  saveState();
+  window.scrollTo(0,0);
+  render();
+}
+
+// Init
+loadState();
+// Apply persisted filter state to UI
+document.getElementById("fAll").className = curFilter === "all" ? "fbtn on" : "fbtn";
+document.getElementById("fWeak").className = curFilter === "weak" ? "fbtn on" : "fbtn";
+document.getElementById("fUnseen").className = curFilter === "unseen" ? "fbtn on" : "fbtn";
+var preInit = document.getElementById("fPreOA");
+if (preInit) {
+  preInit.className = curFilter === "preoa" ? "fbtn on" : "fbtn";
+  preInit.style.borderColor = "#dc2626";
+  if (curFilter === "preoa") { preInit.style.background = "#dc262622"; preInit.style.color = "#f87171"; }
+}
+updateChipUI();
+render();
+</script>
+</body>
+</html>
